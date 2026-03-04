@@ -286,6 +286,7 @@ unsafe partial class Player
             if (vFrame == null)
                 break;
 
+            var ts = vFrame.Timestamp;
             var prevFrame = Renderer.Frames.RendererFrame;
             if (Renderer.RenderPlay(vFrame, false))
             {
@@ -295,7 +296,7 @@ unsafe partial class Player
             else
                 vFrame.Dispose();
 
-            UpdateCurTime(vFrame.Timestamp, false);
+            UpdateCurTime(ts, false);
         }
 
         vFrame = null;
