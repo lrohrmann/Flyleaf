@@ -246,8 +246,11 @@ public unsafe partial class Renderer : NotifyPropertyChanged
             
             SwapChain.DisposeLocal();
             Frames.Dispose();
-            D3Dispose();
-            FLDispose();
+            lock (lockRenderLoops)
+            {
+                D3Dispose();
+                FLDispose();
+            }
 
             if (device2d != null)
             {
