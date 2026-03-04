@@ -228,9 +228,9 @@ public unsafe class SwapChain
         if (Disposed)
             return;
 
+        CanPresent  = false;
         Renderer.ClearScreen(force: true, rendererFrame: rendererFrame);
         Disposed    = true;
-        CanPresent  = false;
 
         if (WinUIClbk != null)
         {
