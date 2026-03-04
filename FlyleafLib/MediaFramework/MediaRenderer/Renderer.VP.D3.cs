@@ -315,10 +315,13 @@ color = float4(Texture2.Sample(Sampler, input.Texture).r, Texture3.Sample(Sample
 
     internal void D3SetBackColor()
     {   // Direct Call from Config
-        if (vc != null)
+        lock (lockDevice)
         {
-            vc.VideoProcessorSetOutputBackgroundColor(vp, false, ucfg.d3BackColor);
-            RenderRequest();
+            if (vc != null)
+            {
+                vc.VideoProcessorSetOutputBackgroundColor(vp, false, ucfg.d3BackColor);
+                RenderRequest();
+            }
         }
     }
     void D3SetViewport(int width, int height)
