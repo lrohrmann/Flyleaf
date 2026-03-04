@@ -105,10 +105,11 @@ public unsafe partial class Renderer : IVP
     internal bool VPConfig(VideoStream videoStream, AVFrame* frame)
     {
         lock (lockRenderLoops)
+        {
             Frames.SetRendererFrame(null);
-        
-        scfg = videoStream;
-        VPConfigHelper();
+            scfg = videoStream;
+            VPConfigHelper();
+        }
 
         return true; // todo
     }
