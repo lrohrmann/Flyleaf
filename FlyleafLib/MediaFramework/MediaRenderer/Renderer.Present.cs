@@ -12,6 +12,7 @@ public unsafe partial class Renderer
     long            renderRequestAt, lastRenderAt;
     volatile bool   canIdle;
     volatile bool   isIdleRunning;
+    volatile bool   needsReset;
     object          lockRenderLoops = new();
 
     internal void RenderRequest(VideoFrame frame = null, bool forceClear = false)
@@ -67,15 +68,22 @@ public unsafe partial class Renderer
                 break;
 
             rechecks = 1000;
-            RenderIdle();
+            if (!RenderIdle())
+                break;
         }
 
+        bool doReset;
         lock (lockRenderLoops) // To avoid race condition*?
         {
             isIdleRunning = false;
-            if (renderRequestAt > lastRenderAt && canIdle && SwapChain.CanPresent)
+            doReset = needsReset;
+            needsReset = false;
+            if (!doReset && renderRequestAt > lastRenderAt && canIdle && SwapChain.CanPresent)
                 RenderRequest();
         }
+
+        if (doReset)
+            ResetLocal();
     }
     bool RenderIdle()
     {
@@ -132,7 +140,7 @@ public unsafe partial class Renderer
         catch (SharpGenException e)
         {
             Log.Error($"[RenderIdle] Device Lost ({e.ResultCode.NativeApiCode} ({e.ResultCode}) | {device.DeviceRemovedReason} | {e.Message})");
-            ResetLocal();
+            needsReset = true;
 
             return false;
         }
