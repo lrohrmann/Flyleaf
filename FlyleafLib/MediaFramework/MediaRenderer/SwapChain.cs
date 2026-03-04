@@ -50,6 +50,7 @@ public unsafe class SwapChain
     IVP                 vp;
     LogHandler          Log;
     VPConfig            ucfg;
+    object              lockDispose = new();
 
     internal SwapChain(Renderer renderer, IVP vp = null)
     {
@@ -222,6 +223,8 @@ public unsafe class SwapChain
     }
     internal void DisposeLocal(bool rendererFrame = true)
     {
+        lock (lockDispose)
+        {
         if (Disposed)
             return;
 
@@ -274,6 +277,7 @@ public unsafe class SwapChain
         }
 
         if (CanInfo) Log.Info($"SC Disposed [Hwnd: {ControlHwnd}]");
+        }
     }
     void DisposeLocalWinUI()
     {
